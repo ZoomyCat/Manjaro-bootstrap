@@ -8,20 +8,20 @@
 FIRST_PACKAGE=(filesystem)
 BASH_PACKAGES=(glibc ncurses readline bash)
 PACMAN_PACKAGES=(acl archlinux-keyring manjaro-keyring attr bzip2 coreutils curl e2fsprogs expat gnupg gpgme keyutils krb5 libarchive libassuan libgpg-error libgcrypt libssh2 lzo2 openssl pacman xz zlib)
-# EXTRA_PACKAGES=(pacman-mirrorlist tar libcap arch-install-scripts util-linux systemd)
-PACKAGES=(${FIRST_PACKAGE[*]} ${BASH_PACKAGES[*]} ${PACMAN_PACKAGES[*]})
+EXTRA_PACKAGES=(pacman-mirrors tar libcap arch-install-scripts util-linux systemd manjaroiso)
+PACKAGES=(${FIRST_PACKAGE[*]} ${BASH_PACKAGES[*]} ${PACMAN_PACKAGES[*]} ${EXTRA_PACKAGES[*]})
 
 # Change to the mirror which best fits for you
 # USA
-MIRROR='http://mirrors.kernel.org/archlinux' 
+MIRROR='http://vm1.sorch.info/manjaro/unstable' 
 # Germany
 # MIRROR='http://archlinux.limun.org'
 
 # You can set the ARCH variable to i686 or x86_64
 ARCH=`uname -m`
 LIST=`mktemp`
-CHROOT_DIR=archinstall-chroot
-DIR=archinstall-pkg
+CHROOT_DIR=/build/manjaro
+DIR=/build/manjaro-pkg
 mkdir -p "$DIR"
 mkdir -p "$CHROOT_DIR"
 # Create a list of filenames for the arch packages
@@ -49,8 +49,8 @@ mkdir -p "$CHROOT_DIR/etc/pacman.d/"
 echo "Server = $MIRROR/\$repo/os/$ARCH" >> "$CHROOT_DIR/etc/pacman.d/mirrorlist"
 
 chroot $CHROOT_DIR pacman-key --init
-chroot $CHROOT_DIR pacman-key --populate archlinux
+chroot $CHROOT_DIR pacman-key --populate archlinux manjaro
 chroot $CHROOT_DIR pacman -Syu pacman --force
 [ -f "/etc/resolv.conf" ] && cp "/etc/resolv.conf" "$CHROOT_DIR/etc/"
-echo "Server = $MIRROR/\$repo/os/$ARCH" >> "$CHROOT_DIR/etc/pacman.d/mirrorlist"
+chroot $CHROOT_DIR pacman-mirrors -g -c United_States
 chroot $CHROOT_DIR
