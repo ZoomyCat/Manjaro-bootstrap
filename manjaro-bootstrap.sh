@@ -8,7 +8,7 @@
 FIRST_PACKAGE=(filesystem)
 BASH_PACKAGES=(glibc ncurses readline bash)
 PACMAN_PACKAGES=(acl archlinux-keyring manjaro-keyring attr bzip2 coreutils curl e2fsprogs expat gnupg gpgme keyutils krb5 libarchive libassuan libgpg-error libgcrypt libssh2 lzo2 openssl pacman xz zlib)
-EXTRA_PACKAGES=(pacman-mirrors tar libcap arch-install-scripts util-linux systemd manjaroiso)
+EXTRA_PACKAGES=(pacman-mirrors tar libcap arch-install-scripts util-linux systemd manjaroiso base base-devel git)
 PACKAGES=(${FIRST_PACKAGE[*]} ${BASH_PACKAGES[*]} ${PACMAN_PACKAGES[*]} ${EXTRA_PACKAGES[*]})
 
 # Change to the mirror which best fits for you
