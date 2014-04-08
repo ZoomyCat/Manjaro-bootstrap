@@ -8,8 +8,8 @@
 FIRST_PACKAGE=(filesystem)
 BASH_PACKAGES=(glibc ncurses readline bash)
 PACMAN_PACKAGES=(acl archlinux-keyring manjaro-keyring attr bzip2 coreutils curl e2fsprogs expat gnupg gpgme keyutils krb5 libarchive libassuan libgpg-error libgcrypt libssh2 lzo2 openssl pacman xz zlib)
-CORE_PACKAGES=(pacman-mirrorlist tar libcap arch-install-scripts util-linux systemd base base-devel)
-EXTRA_PACKAGES=(manjaroiso git)
+CORE_PACKAGES=(pacman-mirrorlist tar libcap arch-install-scripts util-linux systemd)
+# EXTRA_PACKAGES=(manjaroiso git base base-devel)
 PACKAGES=(${FIRST_PACKAGE[*]} ${BASH_PACKAGES[*]} ${PACMAN_PACKAGES[*]} ${CORE_PACKAGES[*]})
 
 # Change to the mirror which best fits for you
@@ -43,8 +43,8 @@ for PACKAGE in ${EXTRA_PACKAGES[*]}; do
 done
 # Create mount points
 mount -t proc proc "$CHROOT_DIR/proc/"
-mount -t sysfs sys "$CHROOT_DIR/sys/"
-mount -o bind /dev "$CHROOT_DIR/dev/"
+mount -rbind /sys "$CHROOT_DIR/sys/"
+mount -rbind /dev "$CHROOT_DIR/dev/"
 mkdir -p "$CHROOT_DIR/dev/pts"
 mount -t devpts pts "$CHROOT_DIR/dev/pts/"
 
@@ -58,7 +58,10 @@ echo "Server = $MIRROR/\$repo/$ARCH" >> "$CHROOT_DIR/etc/pacman.d/mirrorlist"
 
 chroot $CHROOT_DIR pacman-key --init
 chroot $CHROOT_DIR pacman-key --populate archlinux manjaro
-chroot $CHROOT_DIR pacman -Syu pacman --force
+chroot $CHROOT_DIR pacman -Syu pacman --force --noconfirm
 [ -f "/etc/resolv.conf" ] && cp "/etc/resolv.conf" "$CHROOT_DIR/etc/"
 chroot $CHROOT_DIR pacman-mirrors -g -c United_States
+chroot $CHROOT_DIR pacman -S manjaroiso git base base-devel
 chroot $CHROOT_DIR
+
+umount -l "$CHROOT_DIR{/dev/pts,/dev,/sys,/proc,}"
