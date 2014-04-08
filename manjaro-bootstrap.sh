@@ -25,11 +25,11 @@ DIR=/build/manjaro-pkg
 mkdir -p "$DIR"
 mkdir -p "$CHROOT_DIR"
 # Create a list of filenames for the arch packages
-wget -q -O- "$MIRROR/core/os/$ARCH/" | sed -n "s|.*href=\"\\([^\"]*xz\\)\".*|\\1|p" >> $LIST
+wget -q -O- "$MIRROR/core/$ARCH/" | sed -n "s|.*href=\"\\([^\"]*xz\\)\".*|\\1|p" >> $LIST
 # Download and extract each package.
 for PACKAGE in ${PACKAGES[*]}; do
         FILE=`grep "$PACKAGE-[0-9]" $LIST|head -n1`
-        wget "$MIRROR/core/os/$ARCH/$FILE" -c -O "$DIR/$FILE"
+        wget "$MIRROR/core/$ARCH/$FILE" -c -O "$DIR/$FILE"
         xz -dc "$DIR/$FILE" | tar x -k -C "$CHROOT_DIR"
         rm -f "$CHROOT_DIR/.PKGINFO" "$CHROOT_DIR/.MTREE" "$CHROOT_DIR/.INSTALL"
 done
@@ -46,7 +46,7 @@ mount -t devpts pts "$CHROOT_DIR/dev/pts/"
 [ -f "/etc/resolv.conf" ] && cp "/etc/resolv.conf" "$CHROOT_DIR/etc/"
 
 mkdir -p "$CHROOT_DIR/etc/pacman.d/"
-echo "Server = $MIRROR/\$repo/os/$ARCH" >> "$CHROOT_DIR/etc/pacman.d/mirrorlist"
+echo "Server = $MIRROR/\$repo/$ARCH" >> "$CHROOT_DIR/etc/pacman.d/mirrorlist"
 
 chroot $CHROOT_DIR pacman-key --init
 chroot $CHROOT_DIR pacman-key --populate archlinux manjaro
