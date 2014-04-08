@@ -8,8 +8,9 @@
 FIRST_PACKAGE=(filesystem)
 BASH_PACKAGES=(glibc ncurses readline bash)
 PACMAN_PACKAGES=(acl archlinux-keyring manjaro-keyring attr bzip2 coreutils curl e2fsprogs expat gnupg gpgme keyutils krb5 libarchive libassuan libgpg-error libgcrypt libssh2 lzo2 openssl pacman xz zlib)
-EXTRA_PACKAGES=(pacman-mirrors tar libcap arch-install-scripts util-linux systemd manjaroiso base base-devel git)
-PACKAGES=(${FIRST_PACKAGE[*]} ${BASH_PACKAGES[*]} ${PACMAN_PACKAGES[*]} ${EXTRA_PACKAGES[*]})
+CORE_PACKAGES=(pacman-mirrorlist tar libcap arch-install-scripts util-linux systemd base base-devel)
+EXTRA_PACKAGES=(manjaroiso git)
+PACKAGES=(${FIRST_PACKAGE[*]} ${BASH_PACKAGES[*]} ${PACMAN_PACKAGES[*]} ${CORE_PACKAGES[*]})
 
 # Change to the mirror which best fits for you
 # USA
@@ -30,6 +31,13 @@ wget -q -O- "$MIRROR/core/$ARCH/" | sed -n "s|.*href=\"\\([^\"]*xz\\)\".*|\\1|p"
 for PACKAGE in ${PACKAGES[*]}; do
         FILE=`grep "$PACKAGE-[0-9]" $LIST|head -n1`
         wget "$MIRROR/core/$ARCH/$FILE" -c -O "$DIR/$FILE"
+        xz -dc "$DIR/$FILE" | tar x -k -C "$CHROOT_DIR"
+        rm -f "$CHROOT_DIR/.PKGINFO" "$CHROOT_DIR/.MTREE" "$CHROOT_DIR/.INSTALL"
+done
+
+for PACKAGE in ${EXTRA_PACKAGES[*]}; do
+        FILE=`grep "$PACKAGE-[0-9]" $LIST|head -n1`
+        wget "$MIRROR/extra/$ARCH/$FILE" -c -O "$DIR/$FILE"
         xz -dc "$DIR/$FILE" | tar x -k -C "$CHROOT_DIR"
         rm -f "$CHROOT_DIR/.PKGINFO" "$CHROOT_DIR/.MTREE" "$CHROOT_DIR/.INSTALL"
 done
