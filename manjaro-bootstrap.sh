@@ -14,7 +14,7 @@ PACKAGES=(${FIRST_PACKAGE[*]} ${BASH_PACKAGES[*]} ${PACMAN_PACKAGES[*]} ${CORE_P
 
 # Change to the mirror which best fits for you
 # USA
-MIRROR='http://vm1.sorch.info/manjaro/unstable' 
+MIRROR='http://vm1.sorch.info/manjaro/stable' 
 # Germany
 # MIRROR='http://archlinux.limun.org'
 
@@ -35,12 +35,12 @@ for PACKAGE in ${PACKAGES[*]}; do
         rm -f "$CHROOT_DIR/.PKGINFO" "$CHROOT_DIR/.MTREE" "$CHROOT_DIR/.INSTALL"
 done
 
-for PACKAGE in ${EXTRA_PACKAGES[*]}; do
-        FILE=`grep "$PACKAGE-[0-9]" $LIST|head -n1`
-        wget "$MIRROR/extra/$ARCH/$FILE" -c -O "$DIR/$FILE"
-        xz -dc "$DIR/$FILE" | tar x -k -C "$CHROOT_DIR"
-        rm -f "$CHROOT_DIR/.PKGINFO" "$CHROOT_DIR/.MTREE" "$CHROOT_DIR/.INSTALL"
-done
+#for PACKAGE in ${EXTRA_PACKAGES[*]}; do
+#        FILE=`grep "$PACKAGE-[0-9]" $LIST|head -n1`
+#        wget "$MIRROR/extra/$ARCH/$FILE" -c -O "$DIR/$FILE"
+#        xz -dc "$DIR/$FILE" | tar x -k -C "$CHROOT_DIR"
+#        rm -f "$CHROOT_DIR/.PKGINFO" "$CHROOT_DIR/.MTREE" "$CHROOT_DIR/.INSTALL"
+#done
 # Create mount points
 mount -t proc proc "$CHROOT_DIR/proc/"
 mount -rbind /sys "$CHROOT_DIR/sys/"
@@ -64,4 +64,7 @@ chroot $CHROOT_DIR pacman-mirrors -g -c United_States
 chroot $CHROOT_DIR pacman -S manjaroiso git base base-devel
 chroot $CHROOT_DIR
 
-umount -l "$CHROOT_DIR{/dev/pts,/dev,/sys,/proc,}"
+umount "$CHROOT_DIR/dev/pts"
+umount "$CHROOT_DIR/dev"
+umount "$CHROOT_DIR/sys"
+umount "$CHROOT_DIR/proc"
